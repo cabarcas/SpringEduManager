@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Estudiantes – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/cursos}">Cursos</a>
+    <a th:href="@{/estudiantes}">Estudiantes</a>
+    <span sec:authorize="hasRole('ADMIN')">
+      <a th:href="@{/usuarios}">Usuarios</a>
+      <a th:href="@{/planes}">Planes de Estudio</a>
+      <a th:href="@{/practicas}">Prácticas</a>
+      <a th:href="@{/evaluaciones}">Evaluaciones</a>
+    </span>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-header">
+    <h1>Estudiantes</h1>
+    <a th:href="@{/estudiantes/nuevo}" class="btn btn-primary"
+       sec:authorize="hasRole('ADMIN')">+ Nuevo Estudiante</a>
+  </div>
+
+  <div class="alert alert-success" th:if="${exito}" th:text="${exito}"></div>
+  <div class="alert alert-danger"  th:if="${error}" th:text="${error}"></div>
+
+  <div class="empty-state" th:if="${#lists.isEmpty(estudiantes)}">
+    <p>No hay estudiantes registrados.</p>
+  </div>
+
+  <table class="table" th:unless="${#lists.isEmpty(estudiantes)}">
+    <thead>
+      <tr>
+        <th>RUT</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Nivel</th>
+        <th>Sección</th>
+        <th>Edad</th>
+        <th>Apoderado</th>
+        <th>Estado</th>
+        <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="e : ${estudiantes}">
+        <td th:text="${e.rut}"></td>
+        <td th:text="${e.nombre}"></td>
+        <td th:text="${e.apellido}"></td>
+        <td th:text="${e.nivelMineduc}"></td>
+        <td th:text="${e.seccion}"></td>
+        <td th:text="${e.edad} + ' años'"></td>
+        <td th:text="${e.nombreApoderado}"></td>
+        <td>
+          <span class="badge badge-success" th:if="${e.activo}">Activo</span>
+          <span class="badge badge-danger"  th:unless="${e.activo}">Inactivo</span>
+        </td>
+        <td sec:authorize="hasRole('ADMIN')">
+          <a th:href="@{/estudiantes/editar/{id}(id=${e.id})}" class="btn btn-sm">Editar</a>
+          <a th:href="@{/estudiantes/vincular/{id}(id=${e.id})}" class="btn btn-sm">Vincular</a>
+          <a th:href="@{/estudiantes/asignar-plan/{id}(id=${e.id})}" class="btn btn-sm">Asignar Plan</a>
+          <a th:href="@{/estudiantes/eliminar/{id}(id=${e.id})}" class="btn btn-sm btn-danger"
+             onclick="return confirm('¿Eliminar este estudiante?')">Eliminar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+</body>
+</html>

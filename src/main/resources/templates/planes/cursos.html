@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Cursos del Plan – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/planes}">← Volver a Planes</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1 th:text="${plan.nombre}"></h1>
+  <p style="color:#666;font-size:14px;margin-bottom:24px"
+     th:text="${plan.nivelMineduc + ' — ' + plan.anio}"></p>
+
+  <div class="alert alert-success" th:if="${exito}" th:text="${exito}"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+
+    <!-- Cursos asignados al plan -->
+    <div>
+      <h2 style="font-size:16px;font-weight:500;margin-bottom:12px">
+        Cursos en este plan
+        <span style="font-size:13px;color:#888;font-weight:400"
+              th:text="'(' + ${#lists.size(plan.cursos)} + ')'"></span>
+      </h2>
+
+      <div class="empty-state" th:if="${#lists.isEmpty(plan.cursos)}"
+           style="padding:20px">
+        <p>Sin cursos asignados aún.</p>
+      </div>
+
+      <table class="table" th:unless="${#lists.isEmpty(plan.cursos)}">
+        <thead>
+          <tr><th>Curso</th><th>Hs</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="curso : ${plan.cursos}">
+            <td th:text="${curso.nombre}"></td>
+            <td th:text="${curso.duracionHoras}"></td>
+            <td>
+              <form th:action="@{/planes/cursos/{planId}/quitar/{cursoId}(planId=${plan.id},cursoId=${curso.id})}"
+                    method="post" style="display:inline">
+                <button type="submit" class="btn btn-sm btn-danger"
+                        onclick="return confirm('¿Quitar este curso del plan?')">Quitar</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cursos disponibles para agregar -->
+    <div>
+      <h2 style="font-size:16px;font-weight:500;margin-bottom:12px">Cursos disponibles</h2>
+
+      <table class="table" th:unless="${#lists.isEmpty(todosCursos)}">
+        <thead>
+          <tr><th>Curso</th><th>Hs</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="curso : ${todosCursos}">
+            <!-- Solo muestra los cursos que NO están ya en el plan -->
+            <th:block th:unless="${plan.cursos.contains(curso)}">
+              <td th:text="${curso.nombre}"></td>
+              <td th:text="${curso.duracionHoras}"></td>
+              <td>
+                <form th:action="@{/planes/cursos/{planId}/agregar/{cursoId}(planId=${plan.id},cursoId=${curso.id})}"
+                      method="post" style="display:inline">
+                  <button type="submit" class="btn btn-sm btn-primary">+ Agregar</button>
+                </form>
+              </td>
+            </th:block>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>

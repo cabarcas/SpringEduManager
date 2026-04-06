@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Estudiante – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+  <style>
+    .dir-campo { margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/estudiantes}">← Volver</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1 th:text="${estudiante.id == null} ? 'Nuevo Estudiante' : 'Editar Estudiante'"></h1>
+
+  <form th:action="${estudiante.id == null} ? @{/estudiantes/nuevo} : @{/estudiantes/editar/{id}(id=${estudiante.id})}"
+        th:object="${estudiante}"
+        method="post"
+        class="form-card">
+
+    <!-- ── Datos del estudiante ──────────────────────────── -->
+    <h2 class="form-section-title">Datos del estudiante</h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nombre">Nombre *</label>
+        <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ej: Sofía">
+        <span class="error-msg" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+      </div>
+      <div class="form-group">
+        <label for="apellido">Apellido *</label>
+        <input type="text" id="apellido" th:field="*{apellido}" placeholder="Ej: Martínez Reyes">
+        <span class="error-msg" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="rut">RUT *</label>
+        <input type="text" id="rut" th:field="*{rut}"
+               th:readonly="${estudiante.id != null}"
+               placeholder="Ej: 21.345.678-3">
+        <span class="error-msg" th:if="${#fields.hasErrors('rut')}" th:errors="*{rut}"></span>
+      </div>
+      <div class="form-group">
+        <label for="fechaNacimiento">Fecha de nacimiento *</label>
+        <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}">
+        <span class="error-msg" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="direccion">Dirección del núcleo de convivencia</label>
+      <input type="text" id="direccion" th:field="*{direccion}"
+             placeholder="Ej: Av. Providencia 1240, Providencia, Santiago">
+    </div>
+
+    <!-- ── Nivel educacional ─────────────────────────────── -->
+    <h2 class="form-section-title">Nivel educacional</h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nivelMineduc">Nivel plan MINEDUC *</label>
+        <select id="nivelMineduc" th:field="*{nivelMineduc}">
+          <option value="">Seleccionar...</option>
+          <optgroup label="Enseñanza Básica">
+            <option value="1° Básico">1° Básico</option>
+            <option value="2° Básico">2° Básico</option>
+            <option value="3° Básico">3° Básico</option>
+            <option value="4° Básico">4° Básico</option>
+            <option value="5° Básico">5° Básico</option>
+            <option value="6° Básico">6° Básico</option>
+            <option value="7° Básico">7° Básico</option>
+            <option value="8° Básico">8° Básico</option>
+          </optgroup>
+          <optgroup label="Enseñanza Media">
+            <option value="1° Medio">1° Medio</option>
+            <option value="2° Medio">2° Medio</option>
+            <option value="3° Medio">3° Medio</option>
+            <option value="4° Medio">4° Medio</option>
+          </optgroup>
+        </select>
+        <span class="error-msg" th:if="${#fields.hasErrors('nivelMineduc')}" th:errors="*{nivelMineduc}"></span>
+      </div>
+      <div class="form-group">
+        <label for="seccion">Sección *</label>
+        <select id="seccion" th:field="*{seccion}">
+          <option value="">Seleccionar...</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+          <option value="E">E</option>
+        </select>
+        <span class="error-msg" th:if="${#fields.hasErrors('seccion')}" th:errors="*{seccion}"></span>
+      </div>
+    </div>
+
+    <div class="form-group form-check">
+      <input type="checkbox" id="activo" th:field="*{activo}">
+      <label for="activo">Estudiante activo</label>
+    </div>
+
+    <!-- ── Apoderado principal ───────────────────────────── -->
+    <h2 class="form-section-title">Apoderado principal</h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nombreApoderado">Nombre *</label>
+        <input type="text" id="nombreApoderado" th:field="*{nombreApoderado}"
+               placeholder="Ej: Carolina Reyes Fuentes">
+        <span class="error-msg" th:if="${#fields.hasErrors('nombreApoderado')}" th:errors="*{nombreApoderado}"></span>
+      </div>
+      <div class="form-group">
+        <label for="vinculoApoderado">Vínculo *</label>
+        <select id="vinculoApoderado" th:field="*{vinculoApoderado}">
+          <option value="">Seleccionar vínculo...</option>
+          <optgroup label="Familiar directo">
+            <option value="Madre">Madre</option>
+            <option value="Padre">Padre</option>
+            <option value="Abuela">Abuela</option>
+            <option value="Abuelo">Abuelo</option>
+            <option value="Tía">Tía</option>
+            <option value="Tío">Tío</option>
+            <option value="Hermana">Hermana</option>
+            <option value="Hermano">Hermano</option>
+          </optgroup>
+          <optgroup label="Legal / tutelar">
+            <option value="Tutora legal">Tutora legal</option>
+            <option value="Tutor legal">Tutor legal</option>
+            <option value="Guardadora">Guardadora</option>
+            <option value="Guardador">Guardador</option>
+          </optgroup>
+          <optgroup label="Convivencia">
+            <option value="Madrastra">Madrastra</option>
+            <option value="Padrastro">Padrastro</option>
+            <option value="Conviviente de la madre">Conviviente de la madre</option>
+            <option value="Conviviente del padre">Conviviente del padre</option>
+          </optgroup>
+          <optgroup label="Otros">
+            <option value="Vecina">Vecina</option>
+            <option value="Vecino">Vecino</option>
+            <option value="Trabajadora social">Trabajadora social</option>
+            <option value="Otro familiar">Otro familiar</option>
+            <option value="Apoderado/a">Apoderado/a</option>
+          </optgroup>
+        </select>
+        <span class="error-msg" th:if="${#fields.hasErrors('vinculoApoderado')}" th:errors="*{vinculoApoderado}"></span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="emailApoderado">Email *</label>
+        <input type="email" id="emailApoderado" th:field="*{emailApoderado}"
+               placeholder="carolina.reyes@gmail.com">
+        <span class="error-msg" th:if="${#fields.hasErrors('emailApoderado')}" th:errors="*{emailApoderado}"></span>
+      </div>
+      <div class="form-group">
+        <label for="telefonoApoderado">Teléfono</label>
+        <input type="text" id="telefonoApoderado" th:field="*{telefonoApoderado}"
+               placeholder="+56 9 8823 4410">
+      </div>
+    </div>
+
+    <!-- Dirección apoderado principal -->
+    <div class="form-group form-check">
+      <input type="checkbox" id="apoderadoMismaDireccion" th:field="*{apoderadoMismaDireccion}"
+             onchange="toggleDirPrincipal(this.checked)">
+      <label for="apoderadoMismaDireccion">Vive en el mismo núcleo de convivencia que el estudiante</label>
+    </div>
+    <div class="form-group dir-campo" id="dirApoderadoPrincipal"
+         th:style="${estudiante.apoderadoMismaDireccion} ? 'display:none' : 'display:block'">
+      <label for="direccionApoderado">Dirección del apoderado principal</label>
+      <input type="text" id="direccionApoderado" th:field="*{direccionApoderado}"
+             placeholder="Ej: Calle Los Aromos 345, Maipú">
+    </div>
+
+    <!-- ── Apoderado suplente ────────────────────────────── -->
+    <h2 class="form-section-title">Apoderado suplente <span style="font-size:12px;font-weight:400;color:#888">(opcional)</span></h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nombreApoderadoSuplente">Nombre</label>
+        <input type="text" id="nombreApoderadoSuplente" th:field="*{nombreApoderadoSuplente}"
+               placeholder="Ej: Rodrigo Martínez Vidal">
+      </div>
+      <div class="form-group">
+        <label for="vinculoApoderadoSuplente">Vínculo</label>
+        <select id="vinculoApoderadoSuplente" th:field="*{vinculoApoderadoSuplente}">
+          <option value="">Seleccionar vínculo...</option>
+          <optgroup label="Familiar directo">
+            <option value="Madre">Madre</option>
+            <option value="Padre">Padre</option>
+            <option value="Abuela">Abuela</option>
+            <option value="Abuelo">Abuelo</option>
+            <option value="Tía">Tía</option>
+            <option value="Tío">Tío</option>
+            <option value="Hermana">Hermana</option>
+            <option value="Hermano">Hermano</option>
+          </optgroup>
+          <optgroup label="Legal / tutelar">
+            <option value="Tutora legal">Tutora legal</option>
+            <option value="Tutor legal">Tutor legal</option>
+            <option value="Guardadora">Guardadora</option>
+            <option value="Guardador">Guardador</option>
+          </optgroup>
+          <optgroup label="Convivencia">
+            <option value="Madrastra">Madrastra</option>
+            <option value="Padrastro">Padrastro</option>
+            <option value="Conviviente de la madre">Conviviente de la madre</option>
+            <option value="Conviviente del padre">Conviviente del padre</option>
+          </optgroup>
+          <optgroup label="Otros">
+            <option value="Vecina">Vecina</option>
+            <option value="Vecino">Vecino</option>
+            <option value="Trabajadora social">Trabajadora social</option>
+            <option value="Otro familiar">Otro familiar</option>
+            <option value="Apoderado/a suplente">Apoderado/a suplente</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="emailApoderadoSuplente">Email</label>
+        <input type="email" id="emailApoderadoSuplente" th:field="*{emailApoderadoSuplente}"
+               placeholder="rodrigo.martinez@gmail.com">
+        <span class="error-msg" th:if="${#fields.hasErrors('emailApoderadoSuplente')}" th:errors="*{emailApoderadoSuplente}"></span>
+      </div>
+      <div class="form-group">
+        <label for="telefonoApoderadoSuplente">Teléfono</label>
+        <input type="text" id="telefonoApoderadoSuplente" th:field="*{telefonoApoderadoSuplente}"
+               placeholder="+56 9 7732 9901">
+      </div>
+    </div>
+
+    <!-- Dirección apoderado suplente -->
+    <div class="form-group form-check">
+      <input type="checkbox" id="suplenteMismaDireccionEstudiante"
+             th:field="*{suplenteMismaDireccionEstudiante}"
+             onchange="toggleDirSuplente()">
+      <label for="suplenteMismaDireccionEstudiante">Vive en el mismo núcleo de convivencia que el estudiante</label>
+    </div>
+    <div class="form-group form-check">
+      <input type="checkbox" id="suplenteMismaDireccionPrincipal"
+             th:field="*{suplenteMismaDireccionPrincipal}"
+             onchange="toggleDirSuplente()">
+      <label for="suplenteMismaDireccionPrincipal">Vive en el mismo núcleo que el apoderado principal</label>
+    </div>
+    <div class="form-group dir-campo" id="dirApoderadoSuplente"
+         th:style="${estudiante.suplenteMismaDireccionEstudiante or estudiante.suplenteMismaDireccionPrincipal} ? 'display:none' : 'display:block'">
+      <label for="direccionApoderadoSuplente">Dirección del apoderado suplente</label>
+      <input type="text" id="direccionApoderadoSuplente" th:field="*{direccionApoderadoSuplente}"
+             placeholder="Ej: Jr. Las Lilas 12, La Florida">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <a th:href="@{/estudiantes}" class="btn">Cancelar</a>
+    </div>
+
+  </form>
+</main>
+
+<script>
+function toggleDirPrincipal(checked) {
+    document.getElementById('dirApoderadoPrincipal').style.display = checked ? 'none' : 'block';
+}
+
+function toggleDirSuplente() {
+    const mismaEst = document.getElementById('suplenteMismaDireccionEstudiante').checked;
+    const mismaPrin = document.getElementById('suplenteMismaDireccionPrincipal').checked;
+    document.getElementById('dirApoderadoSuplente').style.display =
+        (mismaEst || mismaPrin) ? 'none' : 'block';
+}
+</script>
+
+</body>
+</html>

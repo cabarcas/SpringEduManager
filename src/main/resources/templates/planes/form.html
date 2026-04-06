@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Plan de Estudio – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/planes}">← Volver a Planes</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1 th:text="${plan.id == null} ? 'Nuevo Plan de Estudio' : 'Editar Plan de Estudio'"></h1>
+
+  <form th:action="${plan.id == null} ? @{/planes/nuevo} : @{/planes/editar/{id}(id=${plan.id})}"
+        th:object="${plan}"
+        method="post"
+        class="form-card">
+
+    <div class="form-group">
+      <label for="nombre">Nombre del plan *</label>
+      <input type="text" id="nombre" th:field="*{nombre}"
+             placeholder="Ej: Plan de Estudio 1° Básico 2024">
+      <span class="error-msg" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nivelMineduc">Nivel MINEDUC *</label>
+        <select id="nivelMineduc" th:field="*{nivelMineduc}">
+          <option value="">Seleccionar nivel...</option>
+          <optgroup label="Enseñanza Básica">
+            <option th:each="n : ${nivelesMineduc}"
+                    th:if="${n.contains('Básico')}"
+                    th:value="${n}" th:text="${n}"></option>
+          </optgroup>
+          <optgroup label="Enseñanza Media">
+            <option th:each="n : ${nivelesMineduc}"
+                    th:if="${n.contains('Medio')}"
+                    th:value="${n}" th:text="${n}"></option>
+          </optgroup>
+        </select>
+        <span class="error-msg" th:if="${#fields.hasErrors('nivelMineduc')}" th:errors="*{nivelMineduc}"></span>
+      </div>
+      <div class="form-group">
+        <label for="anio">Año *</label>
+        <input type="number" id="anio" th:field="*{anio}"
+               min="2020" max="2099" placeholder="Ej: 2024">
+        <span class="error-msg" th:if="${#fields.hasErrors('anio')}" th:errors="*{anio}"></span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" th:field="*{descripcion}" rows="3"
+                placeholder="Descripción del plan de estudio..."></textarea>
+    </div>
+
+    <div class="form-group form-check">
+      <input type="checkbox" id="activo" th:field="*{activo}">
+      <label for="activo">Plan activo</label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <a th:href="@{/planes}" class="btn">Cancelar</a>
+    </div>
+
+  </form>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Vincular Usuario – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/estudiantes}">← Volver</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1>Vincular usuario a estudiante</h1>
+
+  <div class="form-card">
+    <p style="margin-bottom:16px;font-size:14px;color:#666">
+      Estudiante: <strong th:text="${estudiante.nombre + ' ' + estudiante.apellido}"></strong>
+      (<span th:text="${estudiante.rut}"></span>)
+    </p>
+
+    <form th:action="@{/estudiantes/vincular/{id}(id=${estudiante.id})}"
+          method="post">
+
+      <div class="form-group">
+        <label for="usuarioId">Seleccionar usuario (ROLE_USER)</label>
+        <select id="usuarioId" name="usuarioId">
+          <option value="">Seleccionar...</option>
+          <option th:each="u : ${usuarios}"
+                  th:value="${u.id}"
+                  th:text="${u.username}"></option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Vincular</button>
+        <a th:href="@{/estudiantes}" class="btn">Cancelar</a>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+</body>
+</html>

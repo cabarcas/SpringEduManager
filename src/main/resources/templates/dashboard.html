@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="brand">SpringEduManager</span>
+  <div class="nav-links">
+    <a th:href="@{/cursos}">Cursos</a>
+    <a th:href="@{/estudiantes}">Estudiantes</a>
+    <span sec:authorize="hasRole('ADMIN')">
+      <a th:href="@{/usuarios}">Usuarios</a>
+      <a th:href="@{/planes}">Planes de Estudio</a>
+      <a th:href="@{/practicas}">Prácticas</a>
+      <a th:href="@{/evaluaciones}">Evaluaciones</a>
+      <a th:href="@{/cursos/nuevo}">+ Nuevo Curso</a>
+      <a th:href="@{/estudiantes/nuevo}">+ Nuevo Estudiante</a>
+    </span>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1>Bienvenido, <span th:text="${username}">usuario</span></h1>
+
+  <p class="role-badge" sec:authorize="hasRole('ADMIN')">Rol: Administrador</p>
+  <p class="role-badge" sec:authorize="hasRole('USER')">Rol: Estudiante</p>
+
+  <!-- ── Vista ADMIN ─────────────────────────────────────── -->
+  <div sec:authorize="hasRole('ADMIN')" class="dashboard-grid">
+
+    <a th:href="@{/cursos}" class="card">
+      <h3>Cursos</h3>
+      <p>Ver todos los cursos disponibles</p>
+    </a>
+
+    <a th:href="@{/planes}" class="card">
+      <h3>Planes de Estudio</h3>
+      <p>Gestionar planes por nivel</p>
+    </a>
+
+    <a th:href="@{/estudiantes}" class="card">
+      <h3>Estudiantes</h3>
+      <p>Ver la lista de estudiantes</p>
+    </a>
+
+    <a th:href="@{/practicas}" class="card">
+      <h3>Prácticas</h3>
+      <p>Gestionar prácticas</p>
+    </a>
+
+    <a th:href="@{/evaluaciones}" class="card">
+      <h3>Evaluaciones</h3>
+      <p>Gestionar evaluaciones</p>
+    </a>
+    
+    <a th:href="@{/usuarios}" class="card">
+      <h3>Usuarios</h3>
+      <p>Gestionar cuentas de acceso</p>
+    </a>
+
+    <div class="card api-card">
+      <h3>API REST</h3>
+      <p style="font-size:12px;margin-bottom:6px;color:#666">Basic Auth · admin / admin123 · Puerto <span th:text="${serverPort}"></span></p>
+      <div style="font-size:11px;line-height:1.8">
+        <strong style="color:#888;font-size:10px">ESTUDIANTES</strong><br>
+        <code>GET · POST /api/estudiantes</code>
+        <code>GET · PUT · DELETE /api/estudiantes/{id}</code><br>
+        <strong style="color:#888;font-size:10px">CURSOS</strong><br>
+        <code>GET · POST /api/cursos</code>
+        <code>GET · PUT · DELETE /api/cursos/{id}</code>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Vista USER vinculado a un estudiante ───────────── -->
+  <div sec:authorize="hasRole('USER')" th:if="${estudiante != null}" class="dashboard-grid">
+
+    <a th:href="@{/cursos/mis-cursos/{id}(id=${estudianteId})}" class="card">
+      <h3>Mis Cursos</h3>
+      <p>Ver mis cursos inscritos</p>
+    </a>
+
+    <a th:href="@{/practicas/mis-practicas/{id}(id=${estudianteId})}" class="card">
+      <h3>Mis Prácticas</h3>
+      <p>Ver mis prácticas</p>
+    </a>
+
+    <a th:href="@{/evaluaciones/mis-evaluaciones/{id}(id=${estudianteId})}" class="card">
+      <h3>Mis Evaluaciones</h3>
+      <p>Consultar mis notas</p>
+    </a>
+
+  </div>
+
+  <!-- ── Vista USER sin vincular ────────────────────────── -->
+  <div sec:authorize="hasRole('USER')" th:unless="${estudiante != null}">
+    <p style="color:#888;font-size:14px">
+      Tu cuenta aún no está vinculada a un estudiante.
+      Contacta al administrador.
+    </p>
+  </div>
+
+</main>
+
+</body>
+</html>

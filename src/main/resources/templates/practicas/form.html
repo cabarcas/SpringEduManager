@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Práctica – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/practicas}">← Volver a Prácticas</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1 th:text="${practica.id == null} ? 'Nueva Práctica' : 'Editar Práctica'"></h1>
+
+  <form th:action="${practica.id == null} ? @{/practicas/nuevo} : @{/practicas/editar/{id}(id=${practica.id})}"
+        th:object="${practica}"
+        method="post"
+        class="form-card">
+
+    <h2 class="form-section-title">Datos de la práctica</h2>
+
+    <div class="form-group">
+      <label for="nombre">Nombre *</label>
+      <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ej: Práctica 1 - Arrays">
+      <span class="error-msg" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" th:field="*{descripcion}" rows="3"
+                placeholder="Descripción de la práctica..."></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fechaEntrega">Fecha de entrega *</label>
+        <input type="date" id="fechaEntrega" th:field="*{fechaEntrega}">
+        <span class="error-msg" th:if="${#fields.hasErrors('fechaEntrega')}" th:errors="*{fechaEntrega}"></span>
+      </div>
+      <div class="form-group">
+        <label for="estado">Estado</label>
+        <select id="estado" th:field="*{estado}">
+          <option th:each="e : ${estados}" th:value="${e}" th:text="${e}"></option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="nota">Nota (1.0 – 7.0)</label>
+      <input type="number" id="nota" th:field="*{nota}"
+             min="1.0" max="7.0" lang="en" step="0.1"
+             placeholder="Solo si está corregida">
+      <span class="error-msg" th:if="${#fields.hasErrors('nota')}" th:errors="*{nota}"></span>
+    </div>
+
+    <h2 class="form-section-title">Asignación</h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="curso">Curso *</label>
+        <select id="curso" th:field="*{curso}">
+          <option value="">Seleccionar curso...</option>
+          <option th:each="c : ${cursos}"
+                  th:value="${c.id}"
+                  th:text="${c.nombre}"></option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="estudiante">Estudiante *</label>
+        <select id="estudiante" th:field="*{estudiante}">
+          <option value="">Seleccionar estudiante...</option>
+          <option th:each="e : ${estudiantes}"
+                  th:value="${e.id}"
+                  th:text="${e.nombre + ' ' + e.apellido + ' (' + e.rut + ')'}"></option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <a th:href="@{/practicas}" class="btn">Cancelar</a>
+    </div>
+
+  </form>
+</main>
+
+</body>
+</html>

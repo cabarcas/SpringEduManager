@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Curso – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/cursos}">← Volver a Cursos</a>
+    <a th:href="@{/usuarios}">Usuarios</a>
+    <a th:href="@{/planes}">Planes de Estudio</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1 th:text="${curso.id == null} ? 'Nuevo Curso' : 'Editar Curso'"></h1>
+
+  <form th:action="${curso.id == null} ? @{/cursos/nuevo} : @{/cursos/editar/{id}(id=${curso.id})}"
+        th:object="${curso}"
+        method="post"
+        class="form-card">
+
+    <div class="form-group">
+      <label for="nombre">Nombre del curso *</label>
+      <input type="text" id="nombre" th:field="*{nombre}" placeholder="Ej: Matemáticas">
+      <span class="error-msg" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" th:field="*{descripcion}" rows="3"
+                placeholder="Descripción del curso..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="duracionHoras">Duración (horas) *</label>
+      <input type="number" id="duracionHoras" th:field="*{duracionHoras}"
+             min="1" placeholder="Ej: 40">
+      <span class="error-msg" th:if="${#fields.hasErrors('duracionHoras')}" th:errors="*{duracionHoras}"></span>
+    </div>
+
+    <div class="form-group form-check">
+      <input type="checkbox" id="activo" th:field="*{activo}">
+      <label for="activo">Curso activo</label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <a th:href="@{/cursos}" class="btn">Cancelar</a>
+    </div>
+
+  </form>
+</main>
+
+</body>
+</html>

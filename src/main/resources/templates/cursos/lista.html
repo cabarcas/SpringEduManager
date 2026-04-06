@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Cursos – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/cursos}">Cursos</a>
+    <a th:href="@{/estudiantes}">Estudiantes</a>
+    <span sec:authorize="hasRole('ADMIN')">
+      <a th:href="@{/usuarios}">Usuarios</a>
+      <a th:href="@{/planes}">Planes de Estudio</a>
+      <a th:href="@{/practicas}">Prácticas</a>
+      <a th:href="@{/evaluaciones}">Evaluaciones</a>
+    </span>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-header">
+    <h1>Cursos</h1>
+    <a th:href="@{/cursos/nuevo}" class="btn btn-primary"
+       sec:authorize="hasRole('ADMIN')">+ Nuevo Curso</a>
+  </div>
+
+  <div class="alert alert-success" th:if="${exito}" th:text="${exito}"></div>
+
+  <div class="empty-state" th:if="${#lists.isEmpty(cursos)}">
+    <p>No hay cursos registrados.</p>
+  </div>
+
+  <table class="table" th:unless="${#lists.isEmpty(cursos)}">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Duración (hs)</th>
+        <th>Estado</th>
+        <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="curso : ${cursos}">
+        <td th:text="${curso.id}"></td>
+        <td th:text="${curso.nombre}"></td>
+        <td th:text="${curso.descripcion}"></td>
+        <td th:text="${curso.duracionHoras}"></td>
+        <td>
+          <span class="badge badge-success" th:if="${curso.activo}">Activo</span>
+          <span class="badge badge-danger"  th:unless="${curso.activo}">Inactivo</span>
+        </td>
+        <td sec:authorize="hasRole('ADMIN')">
+          <a th:href="@{/cursos/editar/{id}(id=${curso.id})}" class="btn btn-sm">Editar</a>
+          <a th:href="@{/cursos/eliminar/{id}(id=${curso.id})}" class="btn btn-sm btn-danger"
+             onclick="return confirm('¿Eliminar este curso?')">Eliminar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+</body>
+</html>

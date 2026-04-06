@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Resetear Contraseña – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/usuarios}">← Volver a Usuarios</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1>Resetear Contraseña</h1>
+
+  <div class="form-card">
+    <p style="font-size:14px;color:#666;margin-bottom:16px">
+      Usuario: <strong th:text="${usuario.username}"></strong>
+      <span class="badge badge-info"    th:if="${usuario.rol == 'ROLE_ADMIN'}">ADMIN</span>
+      <span class="badge badge-warning" th:if="${usuario.rol == 'ROLE_USER'}">USER</span>
+    </p>
+
+    <form th:action="@{/usuarios/resetear/{id}(id=${usuario.id})}" method="post">
+
+      <div class="form-group">
+        <label for="nuevaPassword">Nueva contraseña *</label>
+        <input type="password" id="nuevaPassword" name="nuevaPassword"
+               placeholder="Mínimo 6 caracteres" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Guardar nueva contraseña</button>
+        <a th:href="@{/usuarios}" class="btn">Cancelar</a>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+</body>
+</html>

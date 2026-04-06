@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Planes de Estudio – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/cursos}">Cursos</a>
+    <a th:href="@{/planes}">Planes de Estudio</a>
+    <a th:href="@{/usuarios}">Usuarios</a>
+    <a th:href="@{/practicas}">Prácticas</a>
+    <a th:href="@{/evaluaciones}">Evaluaciones</a>
+    <a th:href="@{/estudiantes}">Estudiantes</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-header">
+    <h1>Planes de Estudio</h1>
+    <a th:href="@{/planes/nuevo}" class="btn btn-primary">+ Nuevo Plan</a>
+  </div>
+
+  <div class="alert alert-success" th:if="${exito}" th:text="${exito}"></div>
+
+  <div class="empty-state" th:if="${#lists.isEmpty(planes)}">
+    <p>No hay planes de estudio registrados.</p>
+  </div>
+
+  <table class="table" th:unless="${#lists.isEmpty(planes)}">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Nivel MINEDUC</th>
+        <th>Año</th>
+        <th>Cursos</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="plan : ${planes}">
+        <td th:text="${plan.nombre}"></td>
+        <td th:text="${plan.nivelMineduc}"></td>
+        <td th:text="${plan.anio}"></td>
+        <td th:text="${#lists.size(plan.cursos)} + ' cursos'"></td>
+        <td>
+          <span class="badge badge-success" th:if="${plan.activo}">Activo</span>
+          <span class="badge badge-danger"  th:unless="${plan.activo}">Inactivo</span>
+        </td>
+        <td>
+          <a th:href="@{/planes/cursos/{id}(id=${plan.id})}" class="btn btn-sm">Gestionar Cursos</a>
+          <a th:href="@{/planes/editar/{id}(id=${plan.id})}" class="btn btn-sm">Editar</a>
+          <a th:href="@{/planes/eliminar/{id}(id=${plan.id})}" class="btn btn-sm btn-danger"
+             onclick="return confirm('¿Eliminar este plan?')">Eliminar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+</body>
+</html>

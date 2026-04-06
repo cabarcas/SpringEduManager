@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Evaluaciones – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+  <style>
+    .leyenda-btn { background:none; border:0.5px solid #d0d5dd; border-radius:6px; padding:5px 12px; font-size:13px; cursor:pointer; color:#555; margin-bottom:14px; }
+    .leyenda-btn:hover { background:#f5f5f5; }
+    .leyenda-box { display:none; background:#f8f9fa; border:0.5px solid #e5e7eb; border-radius:8px; padding:16px 20px; margin-bottom:16px; font-size:13px; }
+    .leyenda-box.open { display:block; }
+    .leyenda-title { font-size:12px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; }
+    .leyenda-item { display:grid; grid-template-columns:160px 1fr; gap:8px; padding:6px 0; border-bottom:0.5px solid #eee; }
+    .leyenda-item:last-child { border:none; }
+    .leyenda-tipo { font-weight:500; color:#333; }
+    .leyenda-desc { color:#666; line-height:1.5; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/cursos}">Cursos</a>
+    <a th:href="@{/estudiantes}">Estudiantes</a>
+    <a th:href="@{/usuarios}">Usuarios</a>
+    <a th:href="@{/planes}">Planes de Estudio</a>
+    <a th:href="@{/practicas}">Prácticas</a>
+    <a th:href="@{/evaluaciones}">Evaluaciones</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-header">
+    <h1>Evaluaciones</h1>
+    <a th:href="@{/evaluaciones/nuevo}" class="btn btn-primary">+ Nueva Evaluación</a>
+  </div>
+
+  <div class="alert alert-success" th:if="${exito}" th:text="${exito}"></div>
+
+  <!-- Leyenda desplegable -->
+  <button class="leyenda-btn" onclick="toggleLeyenda()">¿Qué tipo de evaluación registrar? ▾</button>
+  <div class="leyenda-box" id="leyenda-eval">
+    <div class="leyenda-title">Tipos de evaluación — siempre generan nota (sumativas)</div>
+    <div class="leyenda-item">
+      <span class="leyenda-tipo">Trabajo</span>
+      <span class="leyenda-desc">Producto elaborado en casa o en clases, individual o grupal. Incluye láminas, informes, maquetas.</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-tipo">Control</span>
+      <span class="leyenda-desc">Evaluación escrita breve. Cubre contenidos recientes de una o dos clases. Menor ponderación que la prueba.</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-tipo">Prueba</span>
+      <span class="leyenda-desc">Instrumento escrito formal e individual. Evalúa una unidad o período. Es el tipo más común y con mayor ponderación.</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-tipo">Disertación</span>
+      <span class="leyenda-desc">Presentación oral individual o grupal ante el curso. Habitual en Historia, Lenguaje y Ciencias desde 3° básico.</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-tipo">Proyecto</span>
+      <span class="leyenda-desc">Trabajo extendido con etapas y rúbrica. Integra varias habilidades.</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-tipo">Evaluación</span>
+      <span class="leyenda-desc">Observación directa del desempeño. Propio de Ed. Física, Artes, Música y Tecnología.</span>
+    </div>
+  </div>
+
+  <div class="empty-state" th:if="${#lists.isEmpty(evaluaciones)}">
+    <p>No hay evaluaciones registradas.</p>
+  </div>
+
+  <table class="table" th:unless="${#lists.isEmpty(evaluaciones)}">
+    <thead>
+      <tr>
+        <th>Estudiante</th>
+        <th>Curso</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Tipo</th>
+        <th>Fecha</th>
+        <th>Nota</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="e : ${evaluaciones}">
+        <td th:text="${e.estudiante.nombre + ' ' + e.estudiante.apellido}"></td>
+        <td th:text="${e.curso.nombre}"></td>
+        <td th:text="${e.nombre}"></td>
+        <td th:text="${e.descripcion}"></td>
+        <td th:text="${e.tipo}"></td>
+        <td th:text="${e.fecha}"></td>
+        <td>
+          <span th:text="${e.nota}"
+                th:classappend="${e.aprobado} ? 'nota-aprobado' : 'nota-reprobado'"></span>
+        </td>
+        <td>
+          <span class="badge badge-success" th:if="${e.aprobado}">Aprobado</span>
+          <span class="badge badge-danger"  th:unless="${e.aprobado}">Reprobado</span>
+        </td>
+        <td>
+          <a th:href="@{/evaluaciones/editar/{id}(id=${e.id})}" class="btn btn-sm">Editar</a>
+          <a th:href="@{/evaluaciones/eliminar/{id}(id=${e.id})}" class="btn btn-sm btn-danger"
+             onclick="return confirm('¿Eliminar esta evaluación?')">Eliminar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+<script>
+function toggleLeyenda() {
+  const box = document.getElementById('leyenda-eval');
+  const btn = document.querySelector('.leyenda-btn');
+  box.classList.toggle('open');
+  btn.textContent = box.classList.contains('open')
+    ? '¿Qué tipo de evaluación registrar? ▴'
+    : '¿Qué tipo de evaluación registrar? ▾';
+}
+</script>
+
+</body>
+</html>

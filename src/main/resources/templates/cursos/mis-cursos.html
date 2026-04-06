@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mis Cursos – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/dashboard}">Dashboard</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <h1>Mis Cursos</h1>
+
+  <div class="empty-state" th:if="${#lists.isEmpty(cursos)}">
+    <p>No tienes cursos asignados aún.</p>
+  </div>
+
+  <table class="table" th:unless="${#lists.isEmpty(cursos)}">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Duración (hs)</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="curso : ${cursos}">
+        <td th:text="${curso.nombre}"></td>
+        <td th:text="${curso.descripcion}"></td>
+        <td th:text="${curso.duracionHoras}"></td>
+        <td>
+          <span class="badge badge-success" th:if="${curso.activo}">Activo</span>
+          <span class="badge badge-danger"  th:unless="${curso.activo}">Inactivo</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+</body>
+</html>

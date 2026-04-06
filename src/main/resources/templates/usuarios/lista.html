@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuarios – SpringEduManager</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a th:href="@{/dashboard}" class="brand">SpringEduManager</a>
+  <div class="nav-links">
+    <a th:href="@{/cursos}">Cursos</a>
+    <a th:href="@{/estudiantes}">Estudiantes</a>
+    <a th:href="@{/usuarios}">Usuarios</a>
+    <a th:href="@{/planes}">Planes de Estudio</a>
+    <a th:href="@{/practicas}">Prácticas</a>
+    <a th:href="@{/evaluaciones}">Evaluaciones</a>
+    <form th:action="@{/logout}" method="post" style="display:inline;margin:0;padding:0">
+      <button type="submit"
+              style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.85);font-size:14px;padding:0;margin-left:16px;font-family:inherit">
+        Cerrar sesión
+      </button>
+    </form>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-header">
+    <h1>Gestión de Usuarios</h1>
+    <a th:href="@{/usuarios/nuevo}" class="btn btn-primary">+ Nuevo Usuario</a>
+  </div>
+
+  <div class="alert alert-success" th:if="${exito}" th:text="${exito}"></div>
+  <div class="alert alert-danger"  th:if="${error}"  th:text="${error}"></div>
+
+  <div class="empty-state" th:if="${#lists.isEmpty(usuarios)}">
+    <p>No hay usuarios registrados.</p>
+  </div>
+
+  <table class="table" th:unless="${#lists.isEmpty(usuarios)}">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Estudiante vinculado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="u : ${usuarios}">
+        <td th:text="${u.username}"></td>
+        <td>
+          <span class="badge badge-info"    th:if="${u.rol == 'ROLE_ADMIN'}">Admin</span>
+          <span class="badge badge-success" th:unless="${u.rol == 'ROLE_ADMIN'}">User</span>
+        </td>
+        <td>
+          <span class="badge badge-success" th:if="${u.activo}">Activo</span>
+          <span class="badge badge-danger"  th:unless="${u.activo}">Inactivo</span>
+        </td>
+        <td>
+          <span th:if="${u.estudiante != null}"
+                th:text="${u.estudiante.nombre + ' ' + u.estudiante.apellido + ' (' + u.estudiante.rut + ')'}">
+          </span>
+          <span th:unless="${u.estudiante != null}" style="color:#aaa">Sin vincular</span>
+        </td>
+        <td>
+          <a th:href="@{/usuarios/editar/{id}(id=${u.id})}" class="btn btn-sm">Editar</a>
+          <a th:href="@{/usuarios/reset-password/{id}(id=${u.id})}" class="btn btn-sm">Reset contraseña</a>
+          <a th:href="@{/usuarios/eliminar/{id}(id=${u.id})}" class="btn btn-sm btn-danger"
+             onclick="return confirm('¿Eliminar este usuario? El estudiante vinculado no se eliminará.')">Eliminar</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+</body>
+</html>
