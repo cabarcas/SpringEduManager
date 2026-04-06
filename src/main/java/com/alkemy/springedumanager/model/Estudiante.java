@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Table(name = "estudiantes")
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = "usuario")
 public class Estudiante {
 
     @Id
