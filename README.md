@@ -169,7 +169,7 @@ springedumanager/
 ---
 
 ## Modelo de datos
-```Mermaid
+```mermaid
 erDiagram
     Usuario {
         string username
